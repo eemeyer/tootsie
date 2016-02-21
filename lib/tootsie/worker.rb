@@ -33,12 +33,17 @@ module Tootsie
           logger.warn "Job interrupted"
           job.notify :canceled
         rescue => exception
-          if job.retries_left > 0 and retriable?(exception)
-            job.retries_left -= 1
-            logger.error "Job failed with exception #{exception.class} " \
-              "(#{exception.message}), rescheduling with #{job.retries_left} retries left"
-            job.notify :failed_will_retry, reason: exception.message
-            job.publish
+          if retriable?(exception)
+            if job.retries_left > 0
+              job.retries_left -= 1
+              logger.error "Job failed with exception #{exception.class} " \
+                "(#{exception.message}), rescheduling with #{job.retries_left} retries left"
+              job.notify :failed_will_retry, reason: exception.message
+              job.publish
+            else
+              logger.error "No more retries for job, marking as permanently failed"
+              job.notify :failed, reason: exception.message
+            end
           else
             log_permanent_failure(exception)
             job.notify :failed, reason: exception.message
@@ -96,7 +101,6 @@ module Tootsie
       end
 
       def log_permanent_failure(exception)
-        logger.error "No more retries for job, marking as permanently failed"
         case exception
           when Timeout::Error, Excon::Errors::Timeout
             logger.error("The job failed due to timeout")
