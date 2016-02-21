@@ -38,3 +38,7 @@ config_path = File.expand_path("../tootsie.conf", __FILE__)
 if File.exist?(config_path)
   Tootsie::Configuration.instance.load_from_file(config_path)
 end
+
+Excon.defaults[:middlewares] << Excon::Middleware::RedirectFollower
+
+Excon.defaults.merge!(omit_default_port: true)  # Otherwise can cause redirect issues

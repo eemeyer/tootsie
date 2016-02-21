@@ -36,17 +36,6 @@ module Tootsie
                     ensure_temp_file.seek(0)
                     break
                   end
-                when 301, 302
-                  location = response.headers['Location']
-                  if location.nil?
-                    logger.info "Missing location header in response"
-                    raise ResourceNotFound
-                  elsif not visited.add?(location)
-                    raise TooManyRedirects
-                  else
-                    logger.info "Redirected to #{location}"
-                    uri = location
-                  end
                 when 404, 410
                   raise ResourceNotFound
                 when 503
@@ -62,6 +51,9 @@ module Tootsie
                   end
                 when 502, 503, 504
                   raise ResourceTemporarilyUnavailable,
+                    "Server returned status #{response.status} for #{uri}"
+                when 301, 302, 400..499
+                  raise ResourceUnavailable,
                     "Server returned status #{response.status} for #{uri}"
                 else
                   raise UnexpectedResponse, "Server returned status #{response.status} for #{uri}"
