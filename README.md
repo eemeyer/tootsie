@@ -227,6 +227,7 @@ Image jobs have the `type` key set to `image`. The key `params` must be set to a
     * `format`: Either `jpeg`, `png` or `gif`.
     * `quality`: A quality value between 0.0 and 1.0 which will be translated to a compression level depending on the output coding. The default is 1.0.
     * `strip_metadata`: If true, metadata such as EXIF and IPTC will be deleted. For thumbnails, this often reduces the file size considerably.
+    * `ignore_exif_rotation`: If true, the image will not be rotated based on EXIF information.
     * `medium`: If `web`, the image will be optimized for web usage. See below for details.
     * `content_type`: Content type of resultant file. The system will be able to guess basic types such as `image/jpeg`.
 

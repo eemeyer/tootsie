@@ -87,7 +87,7 @@ module Tootsie
                 medium = version_options[:medium]
                 medium &&= medium.to_sym
 
-                auto_orient = (medium == :web || version_options[:strip_metadata])
+                auto_orient = (medium == :web || version_options[:strip_metadata]) && !version_options[:ignore_exif_rotation]
 
                 target_width, target_height =
                   version_options[:width].try(:to_i),
