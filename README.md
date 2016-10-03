@@ -43,6 +43,7 @@ Dependencies
   * ImageMagick
   * Exiv2
   * pngcrush (optional)
+  * mudraw (for pdf to image conversion) provided by mupdf-tools
 * Amazon S3 account (optional), for loading and storage of files.
 
 Installation

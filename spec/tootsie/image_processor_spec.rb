@@ -42,6 +42,16 @@ describe ImageProcessor do
     end
   end
 
+  describe 'pdf conversion' do
+    %w(jpeg tiff gif png).each do |format|
+      it "converts pdf to #{format}" do
+        result, contents = process_image_version('test_input.pdf', {:format => format})
+        expect(result[:format]).to eq format
+        expect(extract_dimensions(contents)).to eq [612, 792]
+      end
+    end
+  end
+
   describe 'trimming' do
     it "supports trimming enabled" do
       result, contents = process_image_version('border.jpeg', {

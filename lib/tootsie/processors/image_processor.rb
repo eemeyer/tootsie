@@ -23,12 +23,28 @@ module Tootsie
         result = {:outputs => []}
 
         input, output = Resources.parse_uri(@input_url), nil
+        temp_files = []
         begin
           input.open
           begin
             versions.each_with_index do |version_options, version_index|
               version_options = version_options.with_indifferent_access
               logger.info("Handling version: #{version_options.inspect}")
+
+              CommandRunner.new("file :file").
+                run(:file => input.file.path
+              ) do |line|
+                if line =~ /PDF document/
+                  file = Tempfile.new(["pdf", ".png"], :encoding => 'binary')
+                  temp_files << file.path
+                  convert_command = "mudraw"
+                  convert_command << " -o '#{file.path}'"
+                  convert_command << " '#{input.file.path}'"
+                  CommandRunner.new("mudraw -o '#{file.path}' '#{input.file.path}' 1").run
+                  input = Resources.parse_uri("file://#{file.path}")
+                  input.open
+                end
+              end
 
               output = Resources.parse_uri(version_options[:target_url])
               output.open('w')
@@ -237,6 +253,7 @@ module Tootsie
           end
         ensure
           input.close
+          temp_files.each { |f| File.unlink(f) rescue nil }
         end
         result
       end
