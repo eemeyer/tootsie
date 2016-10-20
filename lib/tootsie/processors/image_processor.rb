@@ -40,7 +40,7 @@ module Tootsie
                   convert_command = "mudraw"
                   convert_command << " -o '#{file.path}'"
                   convert_command << " '#{input.file.path}'"
-                  CommandRunner.new("mudraw -o '#{file.path}' '#{input.file.path}' 1").run
+                  CommandRunner.new("mudraw -o '#{file.path}' -r 300 '#{input.file.path}' 1").run
                   input = Resources.parse_uri("file://#{file.path}")
                   input.open
                 end
