@@ -6,6 +6,8 @@ module Tootsie
       target_width, target_height)
       aspect = original_height / original_width.to_f
       case method
+        when :none
+          w, h = original_width, original_height
         when :up
           # FIXME: Use floor, not round
           if original_width < target_width or original_height < target_height
