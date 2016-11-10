@@ -36,8 +36,14 @@ module Tootsie
           if retriable?(exception)
             if job.retries_left > 0
               job.retries_left -= 1
+
+              message = exception.message
+              if exception.is_a?(S3::Error::ResponseError)
+                message = exception.response
+              end
+
               logger.error "Job failed with exception #{exception.class} " \
-                "(#{exception.message}), rescheduling with #{job.retries_left} retries left"
+                "(#{message}), rescheduling with #{job.retries_left} retries left"
               job.notify :failed_will_retry, reason: exception.message
               job.publish
             else
